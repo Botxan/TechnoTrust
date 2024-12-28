@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
   SHELL
 
   # Shared folder configuration
-  config.vm.synced_folder "C:\\Users\\Botxan\\Desktop\\Oihan\\VM\\NS-Shared-Directory", "/shared", type: "virtualbox"
+  # config.vm.synced_folder "C:\\Path\\To\\Shared-Directory", "/shared", type: "virtualbox"
 
   # Define a helper method for machine provisioning
   def provision_machine(machine, username, password)
