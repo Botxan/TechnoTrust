@@ -1,0 +1,9 @@
+[package]
+name = "malware"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+walkdir = "2.3"
+aes-gcm = "0.10.3"
+libc = "0.2"
